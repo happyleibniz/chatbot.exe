@@ -9,29 +9,28 @@ from disk.commands import *  # Assuming you have a file containing your commands
 from disk.print_delay import print_with_delay as print_with_delay
 from disk.converter import handle_converter_command
 
+
 # Function to evaluate a mathematical expression
 def evaluate_expression(expression):
     try:
         result = eval(expression)
         return result
-    except (SyntaxError, ValueError) as e:
-        if str(e) == "SyntaxError: leading zeros in decimal integer literals are not permitted; use an 0o prefix for octal integers":
-            result = str(result)[1:]
-            return result
-        elif "division by zero" in str(e):
-            return "∞"
-
-
-# Function to handle the "/converter" command
+    except ZeroDivisionError as e:
+        return "∞"
+    except SyntaxError as e:
+        return str(expression)[1:]  # Use 'e' instead of 'result' and access the error message using 'str(e)'
+    except SyntaxWarning as e:
+        pass
+    # ValueError,NameError,SyntaxWarning
 
 
 # Main chat loop
 print("Hello! I'm your chatbot. Type 'bye' to end the conversation.")
-response = None
 while True:
     user_input = input("You: ")
     if user_input == '':
         print("WARNING<!>request rejected:no user entered")
+        continue  # Skip the rest of the loop if no user input
 
     if user_input.lower() == 'bye':
         print_with_delay("Goodbye!")
@@ -42,9 +41,29 @@ while True:
         handle_converter_command()
         continue  # Skip the rest of the loop to avoid further processing
 
+    # Check for specific questions
+    if "what is the value of" in user_input.lower():
+        expression = user_input.lower().replace("what is the value of", "").strip()
+        try:
+            response = evaluate_expression(expression)
+        except ZeroDivisionError:
+            response = "∞"
+
+    elif "what is" in user_input.lower():
+        expression = user_input.lower().replace("what is", "").strip()
+        try:
+            response = evaluate_expression(expression)
+        except ZeroDivisionError:
+            response = "∞"
+
     # Check if the user input is a mathematical expression
-    if any(op in user_input for op in "+-*/"):
-        response = evaluate_expression(user_input)
+    elif any(op in user_input for op in "+-*/"):
+        try:
+            response = evaluate_expression(user_input)
+        except ZeroDivisionError:
+            response = "∞"
+
+    # Handle other cases
     else:
         response = responses.get(user_input.lower())
         if response == "EX3mple)(*&^%":
@@ -53,13 +72,8 @@ while True:
             response = random.choice(the_bruh_dictionary)
         elif response == "@$#^$#%&$^$#&#$&#%$chatgpt":
             response = random.choice(gpt_dictionary)
-
-    # Check for specific questions
-    if "what is the value of" in user_input.lower():
-        expression = user_input.lower().replace("what is the value of", "").strip()
-        response = evaluate_expression(expression)
-    elif "what is" in user_input.lower():
-        expression = user_input.lower().replace("what is", "").strip()
-        response = evaluate_expression(expression)
+        else:
+            print("bot:IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIJust don't know what you're saYinG")
     if response is not None:
         print_with_delay(response, delay=0.006)
+

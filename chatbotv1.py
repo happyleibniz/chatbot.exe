@@ -72,7 +72,7 @@ while True:
             response = random.choice(the_bruh_dictionary)
         elif response == "@$#^$#%&$^$#&#$&#%$chatgpt":
             response = random.choice(gpt_dictionary)
-        else:
+        elif response == None: 
             print("bot:IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIJust don't know what you're saYinG")
     if response is not None:
         print_with_delay(response, delay=0.006)

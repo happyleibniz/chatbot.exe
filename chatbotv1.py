@@ -5,9 +5,11 @@ from disk.responses import *
 from disk.the_bruh_dictionary import *
 from disk.python_codes import *
 from disk.chatgpt_dictionary import *
+from disk.Shell import *
 from disk.commands import *  # Assuming you have a file containing your commands
 from disk.print_delay import print_with_delay as print_with_delay
 from disk.converter import handle_converter_command
+from disk.essay_gpt import essay_gpt_dict
 
 
 # Function to evaluate a mathematical expression
@@ -31,39 +33,33 @@ while True:
     if user_input == '':
         print("WARNING<!>request rejected:no user entered")
         continue  # Skip the rest of the loop if no user input
-
     if user_input.lower() == 'bye':
         print_with_delay("Goodbye!")
         break
-
     # Check for specific commands
     if user_input.lower() == "/converter":
         handle_converter_command()
         continue  # Skip the rest of the loop to avoid further processing
-
-    # Check for specific questions
+    elif user_input.lower() == "/shell":
+        handle_shell_command()
+        continue
     if "what is the value of" in user_input.lower():
         expression = user_input.lower().replace("what is the value of", "").strip()
         try:
             response = evaluate_expression(expression)
         except ZeroDivisionError:
             response = "∞"
-
     elif "what is" in user_input.lower():
         expression = user_input.lower().replace("what is", "").strip()
         try:
             response = evaluate_expression(expression)
         except ZeroDivisionError:
             response = "∞"
-
-    # Check if the user input is a mathematical expression
     elif any(op in user_input for op in "+-*/"):
         try:
             response = evaluate_expression(user_input)
         except ZeroDivisionError:
             response = "∞"
-
-    # Handle other cases
     else:
         response = responses.get(user_input.lower())
         if response == "EX3mple)(*&^%":
@@ -72,8 +68,9 @@ while True:
             response = random.choice(the_bruh_dictionary)
         elif response == "@$#^$#%&$^$#&#$&#%$chatgpt":
             response = random.choice(gpt_dictionary)
-        elif response == None: 
-            print("bot:IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIJust don't know what you're saYinG")
+        elif response == "jiof$#%@#$%@#$%@$%@#$%@#$":
+            response = random.choice(essay_gpt_dict)
+        elif response is None:
+            print_with_delay("IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIJust don't know what you're saYinG")
     if response is not None:
         print_with_delay(response, delay=0.006)
-
